@@ -2,8 +2,28 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Greeting from '../components/Greeting';
 const pageTitle = "Home Page 1";
+
+import fetchApi from '../lib/strapi';
+import type Article from '../interfaces/article';
+
+const articles = await fetchApi<Article[]>({
+  endpoint: 'articles', // the content type to fetch
+  wrappedByKey: 'data', // the key to unwrap the response
+});
+
+console.log(articles)
 ---
 <BaseLayout pageTitle={pageTitle}>
   <h2>My awesome blog subtitle</h2>
   <Greeting client:load messages={["Hej", "Hallo", "Hola", "Habari"]} />
+
+  {
+    articles.map((article) => (
+      <li>
+        <a href={`/blog/${article.slug}/`}>
+          {article.title}
+        </a>
+      </li>
+    ))
+  }
 </BaseLayout>

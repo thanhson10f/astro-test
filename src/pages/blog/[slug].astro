@@ -1,0 +1,34 @@
+---
+import fetchApi from '../../lib/strapi';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type Article from '../../interfaces/article';
+
+export async function getStaticPaths() {
+  const articles = await fetchApi<Article[]>({
+    endpoint: 'articles',
+    wrappedByKey: 'data',
+  });
+
+  return articles.map((article) => ({
+    params: { slug: article.slug },
+    props: article,
+  }));
+}
+type Props = Article;
+
+const article = Astro.props;
+---
+
+<BaseLayout pageTitle={article.title}>
+    <main>
+  
+        <h1>{article.title}</h1>
+  
+        <!-- Render plain text -->
+        <p>{article.content}</p>
+        <!-- Render markdown -->
+          {article.content}
+        <!-- Render html -->
+        <Fragment set:html={article.content} />
+      </main>
+</BaseLayout>
